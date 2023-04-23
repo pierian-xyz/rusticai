@@ -2,7 +2,7 @@
 [tool.poetry]
 name = "rusticai"
 version = "0.1.0"
-homepage = "https://github.com/milliondreams/rusticai"
+homepage = "https://github.com/pierian-xyz/rusticai"
 description = "Plain and Simple AI."
 authors = ["Rohit Rai <inbox@rohitrai.com>"]
 readme = "README.md"

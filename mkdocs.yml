@@ -1,7 +1,7 @@
 site_name: rustic_ai
-site_url: https://milliondreams.github.io/rusticai
-repo_url: https://github.com/milliondreams/rusticai
-repo_name: milliondreams/rusticai
+site_url: https://pierian-xyz.github.io/rusticai
+repo_url: https://github.com/pierian-xyz/rusticai
+repo_name: pierian-xyz/rusticai
 #strict: true
 nav:
   - Home: index.md
@@ -63,7 +63,7 @@ extra:
       link: https://github.com/waynerv/cookiecutter-pypackage
       name: Facebook
     - icon: fontawesome/brands/github
-      link: https://github.com/milliondreams/rusticai
+      link: https://github.com/pierian-xyz/rusticai
       name: Github
     - icon: material/email
       link: "mailto:inbox@rohitrai.com"
