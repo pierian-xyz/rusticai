@@ -3,16 +3,16 @@
 
 [![pypi](https://img.shields.io/pypi/v/rusticai.svg)](https://pypi.org/project/rusticai/)
 [![python](https://img.shields.io/pypi/pyversions/rusticai.svg)](https://pypi.org/project/rusticai/)
-[![Build Status](https://github.com/milliondreams/rusticai/actions/workflows/dev.yml/badge.svg)](https://github.com/milliondreams/rusticai/actions/workflows/dev.yml)
-[![codecov](https://codecov.io/gh/milliondreams/rusticai/branch/main/graphs/badge.svg)](https://codecov.io/github/milliondreams/rusticai)
+[![Build Status](https://github.com/pierian-xyz/rusticai/actions/workflows/dev.yml/badge.svg)](https://github.com/pierian-xyz/rusticai/actions/workflows/dev.yml)
+[![codecov](https://codecov.io/gh/pierian-xyz/rusticai/branch/main/graphs/badge.svg)](https://codecov.io/github/pierian-xyz/rusticai)
 
 
 
 Plain and Simple AI
 
 
-* Documentation: <https://milliondreams.github.io/rusticai>
-* GitHub: <https://github.com/milliondreams/rusticai>
+* Documentation: <https://pierian-xyz.github.io/rusticai>
+* GitHub: <https://github.com/pierian-xyz/rusticai>
 * PyPI: <https://pypi.org/project/rusticai/>
 * Free software: Apache-2.0
 

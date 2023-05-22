@@ -22,13 +22,13 @@ the [Github repo][].
 You can either clone the public repository:
 
 ``` console
-$ git clone git://github.com/milliondreams/rusticai
+$ git clone git://github.com/pierian-xyz/rusticai
 ```
 
 Or download the [tarball][]:
 
 ``` console
-$ curl -OJL https://github.com/milliondreams/rusticai/tarball/master
+$ curl -OJL https://github.com/pierian-xyz/rusticai/tarball/dev
 ```
 
 Once you have a copy of the source, you can install it with:
@@ -40,4 +40,4 @@ $ pip install .
   [pip]: https://pip.pypa.io
   [Python installation guide]: http://docs.python-guide.org/en/latest/starting/installation/
   [Github repo]: https://github.com/%7B%7B%20cookiecutter.github_username%20%7D%7D/%7B%7B%20cookiecutter.project_slug%20%7D%7D
-  [tarball]: https://github.com/%7B%7B%20cookiecutter.github_username%20%7D%7D/%7B%7B%20cookiecutter.project_slug%20%7D%7D/tarball/master
+  [tarball]: https://github.com/%7B%7B%20cookiecutter.github_username%20%7D%7D/%7B%7B%20cookiecutter.project_slug%20%7D%7D/tarball/dev
