@@ -53,6 +53,7 @@ mkdocstrings = "^0.21.2"
 mkdocs-material = "^9.1.14"
 mkdocs-autorefs = "^0.4.1"
 mkdocs-include-markdown-plugin = "^4.0.4"
+sqlalchemy-stubs = "^0.4"
 
 [tool.poetry.extras]
 test = [

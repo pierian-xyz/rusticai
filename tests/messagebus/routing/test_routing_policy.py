@@ -22,20 +22,20 @@ class TestRoutingPolicy(unittest.TestCase):
         }
 
         self.message = Message(
-            id=self.message_bus.generate_message_id(Priority.NORMAL).to_int(),
+            id=self.message_bus.generate_message_id(Priority.NORMAL),
             sender="client1",
             content='{"test": "test"}',
         )
 
         self.message2 = Message(
-            id=self.message_bus.generate_message_id(Priority.NORMAL).to_int(),
+            id=self.message_bus.generate_message_id(Priority.NORMAL),
             sender="client1",
             content='{"test": "test"}',
             recipients=["client3"],
         )
 
     def _get_id(self, priority: Priority) -> int:
-        return self.message_bus.generate_message_id(priority).to_int()
+        return self.message_bus.generate_message_id(priority)
 
     def test_broadcast_routing_policy(self):
         # Check that all clients receive the message with BroadcastRoutingPolicy

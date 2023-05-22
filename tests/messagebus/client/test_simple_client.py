@@ -15,7 +15,7 @@ class TestSimpleClient(unittest.TestCase):
 
         self.assertEqual(client.client_id, 'client_3')
         self.assertEqual(client.message_bus, self.message_bus)
-        self.assertIsNone(client.last_read_message_id)
+        self.assertEqual(client.last_read_message_id, 0)
 
     def test_send_message(self):
         self.client_1.send_message({"message": "Hello"}, ['client_2'])
