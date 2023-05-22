@@ -39,6 +39,20 @@ sqlalchemy = "^2.0.13"
 fakeredis = "^2.12.1"
 snowballstemmer = "^2.2.0"
 pip = "^23.1.2"
+pytest = "^7.3.1"
+black = "^23.3.0"
+mypy = "^1.3.0"
+flake8 = "^5.0"
+tox = "^4.5.1"
+pytest-cov = "^4.0.0"
+twine = "^4.0.2"
+pre-commit = "^3.3.2"
+bump2version = "^1.0.1"
+mkdocs = "^1.4.3"
+mkdocstrings = "^0.21.2"
+mkdocs-material = "^9.1.14"
+mkdocs-autorefs = "^0.4.1"
+mkdocs-include-markdown-plugin = "^4.0.4"
 
 [tool.poetry.extras]
 test = [
@@ -58,31 +72,11 @@ doc = [
     "mkdocs-include-markdown-plugin",
     "mkdocs-material",
     "mkdocstrings",
-    "mkdocs-material-extension",
     "mkdocs-autorefs"
     ]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.3.1"
-tox = "^4.5.1"
-mypy = "^1.3.0"
-mkdocs = "^1.4.3"
-mkdocstrings = "^0.21.2"
-mkdocs-material = "^9.1.14"
-mkdocs-include-markdown-plugin = "^4.0.4"
-mkdocstrings-python = "^1.0.0"
-twine = "^4.0.2"
-black = "^23.3.0"
-bump2version = "^1.0.1"
-toml = "^0.10.2"
-setuptools = "^67.8.0"
-pytest-cov = "^4.0.0"
-pydocstyle = "^6.3.0"
-pre-commit = "^3.3.2"
-isort = "^5.12.0"
-flake8-docstrings = "^1.7.0"
-sqlalchemy-stubs = "^0.4"
-flake8 = "^5.0"
+
 
 [tool.black]
 line-length = 120
