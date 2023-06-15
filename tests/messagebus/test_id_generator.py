@@ -1,13 +1,13 @@
 import time
 import unittest
 
-from rustic_ai.messagebus.utils import IDGenerator, Priority
+from rustic_ai.messagebus.utils import GemstoneGenerator, Priority
 
 
 class TestUtils(unittest.TestCase):
     def setUp(self):
-        self.generator = IDGenerator(1)
-        self.generator2 = IDGenerator(2)
+        self.generator = GemstoneGenerator(1)
+        self.generator2 = GemstoneGenerator(2)
 
     def test_id_generator(self):
         # Test that IDs are unique

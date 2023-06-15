@@ -20,8 +20,10 @@ class TestSimpleClient(unittest.TestCase):
     def test_send_message(self):
         self.client_1.send_message({"message": "Hello"}, ['client_2'])
 
-        self.assertEqual(len(self.message_bus.storage.inboxes['client_2']), 1)
-        self.assertEqual(self.message_bus.storage.inboxes['client_2'][0].content, {'message': 'Hello'})
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_2']), 1)
+        self.assertEqual(
+            self.message_bus.storage.inboxes[self.message_bus.id]['client_2'][0].content, {'message': 'Hello'}
+        )
 
     def test_get_next_unread_message(self):
         self.client_1.send_message({"message": "Hello"}, ['client_2'])
@@ -34,7 +36,7 @@ class TestSimpleClient(unittest.TestCase):
         message = self.client_1.send_message({"message": "Hello"}, ['client_2'])
         self.client_1.remove_sent_message(["client_2"], message.id)
 
-        self.assertListEqual(self.message_bus.storage.inboxes['client_2'], [])
+        self.assertListEqual(self.message_bus.storage.inboxes[self.message_bus.id]['client_2'], [])
 
     def test_send_message_to_non_existent_client(self):
         with self.assertRaises(Exception):  # Adjust this based on your implementation

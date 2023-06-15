@@ -10,7 +10,7 @@ class StorageBackend(ABC):
     """
 
     @abstractmethod
-    def create_inbox(self, client_id: str) -> None:
+    def create_inbox(self, message_bus_id: str, client_id: str) -> None:
         """
         Abstract method to create a new inbox for a client with the given ID.
 
@@ -19,7 +19,7 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
-    def remove_inbox(self, client_id: str) -> None:
+    def remove_inbox(self, message_bus_id: str, client_id: str) -> None:
         """
         Abstract method to remove the inbox for a client with the given ID.
 
@@ -28,7 +28,7 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
-    def add_message_to_inbox(self, recipient_id: str, message: Message) -> None:
+    def add_message_to_inbox(self, message_bus_id: str, recipient_id: str, message: Message) -> None:
         """
         Abstract method to add a message to the inbox of the client with the given ID.
 
@@ -38,7 +38,9 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
-    def get_next_unread_message(self, recipient_id: str, last_read_message_id: int) -> Optional[Message]:
+    def get_next_unread_message(
+        self, message_bus_id: str, recipient_id: str, last_read_message_id: int
+    ) -> Optional[Message]:
         """
         Abstract method to retrieve the next unread message for a client with the given ID.
 
@@ -49,7 +51,9 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
-    def remove_received_message(self, sender_id: str, recipient_ids: List[str], message_id: int) -> None:
+    def remove_received_message(
+        self, message_bus_id: str, sender_id: str, recipient_ids: List[str], message_id: int
+    ) -> None:
         """
         Abstract method to remove a sent message from the recipient's inbox.
 

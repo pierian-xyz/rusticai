@@ -1,12 +1,12 @@
 import unittest
 
 from rustic_ai.messagebus import Message
-from rustic_ai.messagebus.utils import IDGenerator, Priority
+from rustic_ai.messagebus.utils import GemstoneGenerator, Priority
 
 
 class TestMessage(unittest.TestCase):
     def setUp(self):
-        self.id_generator = IDGenerator(1)
+        self.id_generator = GemstoneGenerator(1)
 
     def _get_id(self, priority: Priority) -> int:
         return self.id_generator.get_id(priority).to_int()
