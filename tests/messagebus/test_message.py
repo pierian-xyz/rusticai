@@ -58,6 +58,14 @@ class TestMessage(unittest.TestCase):
         sorted_messages = sorted([message1, message3, message2, message4, message5, message6])
         self.assertEqual(sorted_messages, [message5, message2, message1, message4, message3, message6])
 
+    def test_compare_message_to_int(self):
+        message = Message(self._get_id(Priority.NORMAL), "test_sender", '{"content": "Hello!"}')
+        self.assertEqual(False, message == 0)
+        with self.assertRaises(TypeError):
+            message < 0
+        with self.assertRaises(TypeError):
+            message > 0
+
 
 if __name__ == '__main__':
     unittest.main()
