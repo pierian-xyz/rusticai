@@ -32,7 +32,7 @@ class RedisStorage(StorageBackend):
         """
         return cls(redis.Redis(host=host, port=port, db=db))
 
-    def create_inbox(self, client_id: str) -> None:
+    def create_inbox(self, message_bus_id: str, client_id: str) -> None:
         """
         Create a new inbox for a client. Since Redis creates keys on the fly,
         we don't need to do anything in this method.
@@ -41,24 +41,26 @@ class RedisStorage(StorageBackend):
         """
         pass
 
-    def remove_inbox(self, client_id: str) -> None:
+    def remove_inbox(self, message_bus_id: str, client_id: str) -> None:
         """
         Remove the inbox of a client.
 
         :param client_id: The ID of the client.
         """
-        self.redis.delete(client_id)
+        self.redis.delete(self._get_inbox_id(message_bus_id, client_id))
 
-    def add_message_to_inbox(self, recipient_id: str, message: Message) -> None:
+    def add_message_to_inbox(self, message_bus_id: str, recipient_id: str, message: Message) -> None:
         """
         Add a message to the recipient's inbox.
 
         :param recipient_id: The ID of the recipient client.
         :param message: The message to be added.
         """
-        self.redis.zadd(recipient_id, {message.serialize(): message.id})
+        self.redis.zadd(self._get_inbox_id(message_bus_id, recipient_id), {message.serialize(): message.id})
 
-    def get_next_unread_message(self, recipient_id: str, last_read_message_id: int) -> Optional[Message]:
+    def get_next_unread_message(
+        self, message_bus_id: str, recipient_id: str, last_read_message_id: int
+    ) -> Optional[Message]:
         """
         Retrieve the next unread message for a client.
 
@@ -66,13 +68,13 @@ class RedisStorage(StorageBackend):
         :param last_read_message_id: The ID of the last read message.
         :return: The next unread message, if one exists.
         """
-        message_data = self.redis.zrange(recipient_id, 0, 0)
+        message_data = self.redis.zrange(self._get_inbox_id(message_bus_id, recipient_id), 0, 0)
         if message_data:
             message = Message.deserialize(message_data[0])
 
             while message.id == last_read_message_id:
-                self.redis.zrem(recipient_id, message.serialize())
-                message_data = self.redis.zrange(recipient_id, 0, 0)
+                self.redis.zrem(self._get_inbox_id(message_bus_id, recipient_id), message.serialize())
+                message_data = self.redis.zrange(self._get_inbox_id(message_bus_id, recipient_id), 0, 0)
                 if not message_data:
                     return None
                 message = Message.deserialize(message_data[0])
@@ -81,7 +83,9 @@ class RedisStorage(StorageBackend):
         else:
             return None
 
-    def remove_received_message(self, sender_id: str, recipient_ids: List[str], message_id: int) -> None:
+    def remove_received_message(
+        self, message_bus_id: str, sender_id: str, recipient_ids: List[str], message_id: int
+    ) -> None:
         """
         Remove a sent message from the recipient's inbox.
 
@@ -90,9 +94,19 @@ class RedisStorage(StorageBackend):
         :param message_id: The ID of the message to be removed.
         """
         for recipient_id in recipient_ids:
-            inbox = self.redis.zrange(recipient_id, 0, -1)
+            inbox = self.redis.zrange(self._get_inbox_id(message_bus_id, recipient_id), 0, -1)
             for message_data in inbox:
                 message = Message.deserialize(message_data)
                 if message.sender == sender_id and message.id == message_id:
-                    self.redis.zrem(recipient_id, message_data)
+                    self.redis.zrem(self._get_inbox_id(message_bus_id, recipient_id), message_data)
                     break
+
+    def _get_inbox_id(self, message_bus_id: str, client_id: str) -> str:
+        """
+        Get the ID of the inbox for a client.
+
+        :param message_bus_id: The ID of the message bus.
+        :param client_id: The ID of the client.
+        :return: The ID of the client's inbox.
+        """
+        return f"{message_bus_id}-{client_id}"

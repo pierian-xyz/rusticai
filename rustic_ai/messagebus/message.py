@@ -18,6 +18,9 @@ class Message:
         content: JSON,
         recipients: Optional[List[str]] = None,
         priority: Priority = Priority.NORMAL,
+        thread_id: Optional[int] = None,
+        in_reply_to: Optional[int] = None,
+        topic: Optional[str] = None,
     ):
         """
         Initialize the message with a unique ID, sender, content, recipients, and priority.
@@ -32,6 +35,9 @@ class Message:
         self.content: JSON = content
         self.recipients: List[str] = recipients if recipients else []
         self.priority: int = priority
+        self.thread_id: Optional[int] = thread_id if thread_id is not None else id
+        self.in_reply_to: Optional[int] = in_reply_to
+        self.topic: Optional[str] = topic
 
     def set_content(self, content: JSON) -> None:
         """

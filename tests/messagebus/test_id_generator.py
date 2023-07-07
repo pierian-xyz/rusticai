@@ -1,13 +1,13 @@
 import time
 import unittest
 
-from rustic_ai.messagebus.utils import IDGenerator, Priority
+from rustic_ai.messagebus.utils import GemstoneGenerator, Priority
 
 
 class TestUtils(unittest.TestCase):
     def setUp(self):
-        self.generator = IDGenerator(1)
-        self.generator2 = IDGenerator(2)
+        self.generator = GemstoneGenerator(1)
+        self.generator2 = GemstoneGenerator(2)
 
     def test_id_generator(self):
         # Test that IDs are unique
@@ -60,6 +60,16 @@ class TestUtils(unittest.TestCase):
         id2 = id1.to_int()
         id3 = id1.from_int(id2)
         self.assertEqual(id1, id3)
+
+    # Test raise error on comparison with non-GemstoneID
+    def test_id_comparison_with_non_id(self):
+        id1 = self.generator.get_id(Priority.URGENT)
+        id2 = "123"
+        with self.assertRaises(TypeError):
+            id1 == id2
+
+        with self.assertRaises(TypeError):
+            id1 < id2
 
 
 if __name__ == "__main__":

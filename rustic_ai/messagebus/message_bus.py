@@ -5,9 +5,9 @@ import shortuuid
 from .message import Message
 from .routing import BroadcastRoutingPolicy, RoutingPolicy
 from .storage import InMemoryStorage, StorageBackend
-from .utils import IDGenerator, Priority
+from .utils import GemstoneGenerator, Priority
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .client.client import Client
 
 
@@ -34,7 +34,7 @@ class MessageBus:
         """
         self.id = id if id else shortuuid.uuid()
         self.clients: Dict[str, 'Client'] = {}
-        self.id_generator: IDGenerator = IDGenerator(machine_id)
+        self.id_generator: GemstoneGenerator = GemstoneGenerator(machine_id)
         self.storage: StorageBackend = storage_backend or InMemoryStorage()
         self.routing_policy: RoutingPolicy = routing_policy or BroadcastRoutingPolicy()
 
@@ -53,7 +53,7 @@ class MessageBus:
         :param client: The client to register
         """
         self.clients[client.client_id] = client
-        self.storage.create_inbox(client.client_id)
+        self.storage.create_inbox(self.id, client.client_id)
 
     def unregister_client(self, client: 'Client') -> None:
         """
@@ -62,7 +62,7 @@ class MessageBus:
         :param client: The client to unregister
         """
         self.clients.pop(client.client_id, None)
-        self.storage.remove_inbox(client.client_id)
+        self.storage.remove_inbox(self.id, client.client_id)
 
     def send_message(self, message: Message) -> None:
         """
@@ -80,7 +80,7 @@ class MessageBus:
             recipients = self.routing_policy.get_recipients(message, self.clients)
 
         for recipient_id in recipients:
-            self.storage.add_message_to_inbox(recipient_id, message)
+            self.storage.add_message_to_inbox(self.id, recipient_id, message)
 
         # Notify the recipients of new messages
         for recipient_id in recipients:
@@ -95,7 +95,7 @@ class MessageBus:
         :param last_read_message_id: The last read message ID for the client
         :return: The next unread message if available, otherwise None
         """
-        return self.storage.get_next_unread_message(client_id, last_read_message_id)
+        return self.storage.get_next_unread_message(self.id, client_id, last_read_message_id)
 
     def remove_received_message(self, sender_id: str, recipient_ids: List[str], message_id: int) -> None:
         """
@@ -109,9 +109,9 @@ class MessageBus:
         assert recipient_ids, ValueError('recipient_ids must not be empty')
 
         if recipient_ids[0] == '*':
-            self.storage.remove_received_message(sender_id, list(self.clients.keys()), message_id)
+            self.storage.remove_received_message(self.id, sender_id, list(self.clients.keys()), message_id)
         else:
-            self.storage.remove_received_message(sender_id, recipient_ids, message_id)
+            self.storage.remove_received_message(self.id, sender_id, recipient_ids, message_id)
 
     def set_routing_policy(self, routing_policy: RoutingPolicy) -> None:
         """

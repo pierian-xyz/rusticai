@@ -8,6 +8,7 @@ from .client import Client
 
 class AsyncClient(Client):
     """
+    WARNING: WIP DO NOT USE
     An asynchronous implementation of the Client, using asyncio's Queue to manage messages.
     """
 
@@ -19,39 +20,26 @@ class AsyncClient(Client):
         :param message_bus: Reference to the message bus instance
         """
         super().__init__(client_id, message_bus)
-        self.message_queue: asyncio.Queue = asyncio.Queue()
-
-    async def fetch_next_unread_message(self) -> None:
-        """
-        Asynchronously fetch the next unread message for this client and put it into the queue.
-
-        :return: None
-        """
-        message = self.message_bus.get_next_unread_message(self.client_id, self.last_read_message_id)
-
-        if message is not None:
-            self.last_read_message_id = message.id
-            await self.message_queue.put(message)
 
     def get_next_unread_message(self) -> Optional[Message]:
         """
         Synchronously get the next unread message from the queue for this client.
-        DO NOT USE THIS METHOD UNLESS NECESSARY.
         :return: The next unread message, if one exists
         """
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_get_next_unread_message())
+        message = self.message_bus.get_next_unread_message(self.client_id, self.last_read_message_id)
+        return message
 
-    async def async_get_next_unread_message(self) -> Optional[Message]:
+    async def async_get_next_unread_message(self) -> asyncio.Future[Optional[Message]]:
         """
         Asynchronously get the next unread message from the queue for this client.
 
         :return: The next unread message, if one exists
         """
-        return await self.message_queue.get()  # type: ignore
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, self.get_next_unread_message)  # type: ignore
 
     def notify_new_message(self) -> None:
         """
         Schedule a new task to fetch and process the new message asynchronously.
         """
-        asyncio.create_task(self.fetch_next_unread_message())
+        pass

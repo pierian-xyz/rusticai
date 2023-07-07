@@ -10,12 +10,14 @@ nav:
   - Modules: api.md
   - Contributing: contributing.md
   - Changelog: changelog.md
-  - Message Bus API: design/core/messagebus/api.md
-  - Message Bus Architecture: design/core/messagebus/architecture.md
-  - Message Bus Guidelines: design/core/messagebus/guidelines.md
-  - Message Bus Requirements: design/core/messagebus/requirements.md
-  - Message Bus Solution: design/core/messagebus/solution.md
-  - Message Bus Usage: design/core/messagebus/usage.md
+  - Message Bus:
+    - API: design/core/messagebus/api.md
+    - Architecture: design/core/messagebus/architecture.md
+    - Guidelines: design/core/messagebus/guidelines.md
+    - Requirements: design/core/messagebus/requirements.md
+    - Solution: design/core/messagebus/solution.md
+    - Usage: design/core/messagebus/usage.md
+  - Gemstone ID: design/core/messagebus/gemstone_id.md
 
 theme:
   name: material

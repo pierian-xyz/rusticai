@@ -16,19 +16,19 @@ class TestMessageBus(unittest.TestCase):
         message = self.client_1.send_message({"data": "Hello"})
 
         # Since we're using a BroadcastRoutingPolicy, the message should be sent to all clients, except the sender
-        self.assertEqual(len(self.message_bus.storage.inboxes['client_1']), 0)
-        self.assertEqual(len(self.message_bus.storage.inboxes['client_2']), 1)
-        self.assertEqual(len(self.message_bus.storage.inboxes['client_3']), 1)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_1']), 0)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_2']), 1)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_3']), 1)
 
         # The message should be the same as the one sent
-        self.assertEqual(self.message_bus.storage.inboxes['client_2'][0].content, message.content)
-        self.assertEqual(self.message_bus.storage.inboxes['client_3'][0].content, message.content)
+        self.assertEqual(self.message_bus.storage.inboxes[self.message_bus.id]['client_2'][0].content, message.content)
+        self.assertEqual(self.message_bus.storage.inboxes[self.message_bus.id]['client_3'][0].content, message.content)
 
         # The message should have the correct sender and id
-        self.assertEqual(self.message_bus.storage.inboxes['client_2'][0].sender, 'client_1')
-        self.assertEqual(self.message_bus.storage.inboxes['client_3'][0].sender, 'client_1')
-        self.assertEqual(self.message_bus.storage.inboxes['client_2'][0].id, message.id)
-        self.assertEqual(self.message_bus.storage.inboxes['client_3'][0].id, message.id)
+        self.assertEqual(self.message_bus.storage.inboxes[self.message_bus.id]['client_2'][0].sender, 'client_1')
+        self.assertEqual(self.message_bus.storage.inboxes[self.message_bus.id]['client_3'][0].sender, 'client_1')
+        self.assertEqual(self.message_bus.storage.inboxes[self.message_bus.id]['client_2'][0].id, message.id)
+        self.assertEqual(self.message_bus.storage.inboxes[self.message_bus.id]['client_3'][0].id, message.id)
 
     def test_remove_received_message(self):
         message = self.client_1.send_message({"data": "Hello"}, ['client_2', 'client_3'])
@@ -36,10 +36,30 @@ class TestMessageBus(unittest.TestCase):
         self.message_bus.remove_received_message('client_1', ['client_2'], message.id)
 
         # The message should have been removed from the inbox of client_2
-        self.assertEqual(len(self.message_bus.storage.inboxes['client_2']), 0)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_2']), 0)
 
         # The message should still be in the inbox of client_3
-        self.assertEqual(len(self.message_bus.storage.inboxes['client_3']), 1)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_3']), 1)
+
+    # Test remove received message with multiple recipients
+    def test_remove_received_message_multiple_recipients(self):
+        message = self.client_1.send_message({"data": "Hello"}, ['client_2', 'client_3'])
+
+        self.message_bus.remove_received_message('client_1', ['client_2', 'client_3'], message.id)
+
+        # The message should have been removed from the inbox of client_2 and client_3
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_2']), 0)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_3']), 0)
+
+    # Test remove received message with wildcard recipient
+    def test_remove_received_message_wildcard_recipient(self):
+        message = self.client_1.send_message({"data": "Hello"}, ['client_2', 'client_3'])
+
+        self.message_bus.remove_received_message('client_1', ['*'], message.id)
+
+        # The message should have been removed from the inbox of client_2 and client_3
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_2']), 0)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_3']), 0)
 
 
 if __name__ == '__main__':

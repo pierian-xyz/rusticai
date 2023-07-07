@@ -35,7 +35,7 @@ class Priority(IntEnum):
     URGENT = 0
 
 
-class ID:
+class GemstoneID:
     def __init__(self, priority: Priority, timestamp: int, machine_id: int, sequence_number: int):
         self.priority: int = priority.value
         self.timestamp = timestamp
@@ -60,8 +60,8 @@ class ID:
         return cls(Priority(priority), timestamp, machine_id, sequence_number)
 
     def __lt__(self, other):
-        if not isinstance(other, ID):
-            return NotImplemented
+        if not isinstance(other, GemstoneID):
+            raise TypeError(f"Cannot compare GemstoneID to {type(other)}")
         return (self.priority, self.timestamp, self.machine_id, self.sequence_number) < (
             other.priority,
             other.timestamp,
@@ -70,8 +70,8 @@ class ID:
         )
 
     def __eq__(self, other):
-        if not isinstance(other, ID):
-            return NotImplemented
+        if not isinstance(other, GemstoneID):
+            raise TypeError(f"Cannot compare GemstoneID to {type(other)}")
         return (self.priority, self.timestamp, self.machine_id, self.sequence_number) == (
             other.priority,
             other.timestamp,
@@ -83,13 +83,13 @@ class ID:
         return self.__dict__.__str__()
 
 
-class IDGenerator:
+class GemstoneGenerator:
     def __init__(self, machine_id: int):
         self.machine_id = machine_id
         self.sequence_number = 0
         self.last_timestamp = -1
 
-    def get_id(self, priority: Priority) -> ID:
+    def get_id(self, priority: Priority) -> GemstoneID:
         """
         Generate a new snowflake ID additionally considering the given priority.
 
@@ -98,12 +98,12 @@ class IDGenerator:
         """
 
         timestamp = time.time_ns() // 1000000
-        if timestamp < self.last_timestamp:
+        if timestamp < self.last_timestamp:  # TBD: Write test case
             raise ClockMovedBackwardsError("Clock moved backwards!")
 
         if timestamp == self.last_timestamp:
             self.sequence_number = (self.sequence_number + 1) & SEQUENCE_BITMASK
-            if self.sequence_number == 0:
+            if self.sequence_number == 0:  # TBD: Write test case
                 # We have already generated 4096 IDs in this millisecond, wait until the next one
                 while timestamp <= self.last_timestamp:
                     timestamp = time.time_ns() // 1000000
@@ -112,4 +112,4 @@ class IDGenerator:
 
         self.last_timestamp = timestamp
 
-        return ID(priority, timestamp, self.machine_id, self.sequence_number)
+        return GemstoneID(priority, timestamp, self.machine_id, self.sequence_number)

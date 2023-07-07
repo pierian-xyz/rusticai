@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Dict, List
 
 from ..message import Message
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..client.client import Client
 
 
@@ -28,4 +28,4 @@ class RoutingPolicy(ABC):
         :param clients: A dictionary of available clients, keyed by client ID.
         :return: A list of recipient client IDs.
         """
-        pass
+        pass  # pragma: no cover

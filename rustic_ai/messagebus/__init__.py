@@ -3,4 +3,4 @@ from .message import Message, MessageProperties
 from .message_bus import MessageBus
 from .routing import BroadcastRoutingPolicy, DirectOrFallbackRoutingPolicy, HashBasedRoutingPolicy, RoutingPolicy
 from .storage import FileBasedStorage, InMemoryStorage, RedisStorage, SQLStorage, StorageBackend
-from .utils import IDGenerator, Priority
+from .utils import GemstoneGenerator, Priority

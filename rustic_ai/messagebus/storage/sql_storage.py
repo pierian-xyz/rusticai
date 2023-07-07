@@ -23,8 +23,8 @@ class BigIntType(TypeDecorator):
 
     cache_ok = True
 
-    def load_dialect_impl(self, dialect):
-        if dialect.name == 'sqlite':
+    def load_dialect_impl(self, dialect):  # pragma: no cover
+        if dialect.name == "sqlite":
             return dialect.type_descriptor(Numeric)
         else:
             return dialect.type_descriptor(BigInteger)
@@ -38,9 +38,10 @@ class MessageTable(Base):
     A table to store messages in.
     """
 
-    __tablename__ = 'message'
+    __tablename__ = "message"
 
     id = Column(BigIntType, primary_key=True)
+    message_bus_id = Column(String, primary_key=True)
     recipient_id = Column(String, primary_key=True)
     sender_id = Column(String)
     content = Column(String)
@@ -77,29 +78,34 @@ class SQLStorage(StorageBackend):
         finally:
             session.close()
 
-    def create_inbox(self, client_id: str) -> None:
+    def create_inbox(self, message_bus_id: str, client_id: str) -> None:
         # No action required as inboxes are not explicitly created in this storage
         pass
 
-    def remove_inbox(self, client_id: str) -> None:
+    def remove_inbox(self, message_bus_id: str, client_id: str) -> None:
         """
         Remove the inbox of a client.
 
+        :param message_bus_id: The ID of the message bus.
         :param client_id: The ID of the client.
         """
         with self.make_session() as session:
-            session.query(MessageTable).filter_by(recipient_id=client_id).delete(synchronize_session=False)
+            session.query(MessageTable).filter_by(message_bus_id=message_bus_id, recipient_id=client_id).delete(
+                synchronize_session=False
+            )
 
-    def add_message_to_inbox(self, recipient_id: str, message: Message) -> None:
+    def add_message_to_inbox(self, message_bus_id: str, recipient_id: str, message: Message) -> None:
         """
         Add a message to the recipient's inbox.
 
+        :param message_bus_id: The ID of the message bus.
         :param recipient_id: The ID of the recipient client.
         :param message: The message to be added.
         """
         with self.make_session() as session:
             new_message = MessageTable(
                 id=message.id,
+                message_bus_id=message_bus_id,
                 sender_id=message.sender,
                 recipient_id=recipient_id,
                 content=message.get_content(),
@@ -107,10 +113,13 @@ class SQLStorage(StorageBackend):
             )
             session.add(new_message)
 
-    def get_next_unread_message(self, recipient_id: str, last_read_message_id: int) -> Optional[Message]:
+    def get_next_unread_message(
+        self, message_bus_id: str, recipient_id: str, last_read_message_id: int
+    ) -> Optional[Message]:
         """
         Retrieve the next unread message for a client.
 
+        :param message_bus_id: The ID of the message bus.
         :param recipient_id: The ID of the recipient client.
         :param last_read_message_id: The ID of the last read message.
         :return: The next unread message, if one exists.
@@ -118,28 +127,39 @@ class SQLStorage(StorageBackend):
         with self.make_session() as session:
             result = (
                 session.query(MessageTable)
-                .filter(MessageTable.recipient_id == recipient_id, MessageTable.id > last_read_message_id)
+                .filter(
+                    MessageTable.message_bus_id == message_bus_id,
+                    MessageTable.recipient_id == recipient_id,
+                    MessageTable.id > last_read_message_id,
+                )
                 .order_by(MessageTable.id)
                 .first()
             )
             if result is not None:
                 message = Message(
-                    int(result.id), result.sender_id, json.loads(result.content), priority=result.priority
+                    int(result.id),
+                    result.sender_id,
+                    json.loads(result.content),
+                    priority=result.priority,
                 )
                 return message
             else:
                 return None
 
-    def remove_received_message(self, sender_id: str, recipient_ids: List[str], message_id: int) -> None:
+    def remove_received_message(
+        self, message_bus_id: str, sender_id: str, recipient_ids: List[str], message_id: int
+    ) -> None:
         """
-        Remove a sent message from the recipient's inbox.
+        Remove a message from the recipient's inbox.
 
+        :param message_bus_id: The ID of the message bus.
         :param sender_id: The ID of the sender client.
         :param recipient_ids: The List of IDs for the recipient client.
         :param message_id: The ID of the message to be removed.
         """
         with self.make_session() as session:
             session.query(MessageTable).filter(
+                MessageTable.message_bus_id == message_bus_id,
                 MessageTable.recipient_id.in_(recipient_ids),
                 MessageTable.sender_id == sender_id,
                 MessageTable.id == message_id,
