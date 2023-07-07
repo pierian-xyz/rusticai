@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Dict, List
 from ..message import Message, MessageProperties
 from .routing import RoutingPolicy
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..client.client import Client
 
 

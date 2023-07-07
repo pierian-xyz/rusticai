@@ -61,6 +61,16 @@ class TestUtils(unittest.TestCase):
         id3 = id1.from_int(id2)
         self.assertEqual(id1, id3)
 
+    # Test raise error on comparison with non-GemstoneID
+    def test_id_comparison_with_non_id(self):
+        id1 = self.generator.get_id(Priority.URGENT)
+        id2 = "123"
+        with self.assertRaises(TypeError):
+            id1 == id2
+
+        with self.assertRaises(TypeError):
+            id1 < id2
+
 
 if __name__ == "__main__":
     unittest.main()

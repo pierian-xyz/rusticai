@@ -23,7 +23,7 @@ class BigIntType(TypeDecorator):
 
     cache_ok = True
 
-    def load_dialect_impl(self, dialect):
+    def load_dialect_impl(self, dialect):  # pragma: no cover
         if dialect.name == "sqlite":
             return dialect.type_descriptor(Numeric)
         else:

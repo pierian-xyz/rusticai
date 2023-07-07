@@ -16,7 +16,7 @@ class StorageBackend(ABC):
 
         :param client_id: The ID of the client for which to create an inbox.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def remove_inbox(self, message_bus_id: str, client_id: str) -> None:
@@ -25,7 +25,7 @@ class StorageBackend(ABC):
 
         :param client_id: The ID of the client whose inbox is to be removed.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def add_message_to_inbox(self, message_bus_id: str, recipient_id: str, message: Message) -> None:
@@ -35,7 +35,7 @@ class StorageBackend(ABC):
         :param recipient_id: The ID of the recipient client.
         :param message: The message to be added.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def get_next_unread_message(
@@ -48,7 +48,7 @@ class StorageBackend(ABC):
         :param last_read_message_id: The ID of the last read message.
         :return: The next unread message, if one exists.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def remove_received_message(
@@ -61,4 +61,4 @@ class StorageBackend(ABC):
         :param recipient_ids: The ID of the recipient client.
         :param message_id: The ID of the message to be removed.
         """
-        pass
+        pass  # pragma: no cover

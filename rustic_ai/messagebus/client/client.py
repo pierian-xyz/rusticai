@@ -24,7 +24,7 @@ class Client(ABC):
 
         self.message_bus.register_client(self)
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         if hasattr(self, 'message_bus'):
             self.message_bus.unregister_client(self)
 
@@ -51,7 +51,7 @@ class Client(ABC):
 
         :return: The next unread message, if one exists
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def notify_new_message(self) -> None:
@@ -59,7 +59,7 @@ class Client(ABC):
         Abstract method to notify the client of a new message.
 
         """
-        pass
+        pass  # pragma: no cover
 
     def remove_sent_message(self, recipient_ids: List[str], message_id: int) -> None:
         """

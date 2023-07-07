@@ -7,7 +7,7 @@ from .routing import BroadcastRoutingPolicy, RoutingPolicy
 from .storage import InMemoryStorage, StorageBackend
 from .utils import GemstoneGenerator, Priority
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .client.client import Client
 
 

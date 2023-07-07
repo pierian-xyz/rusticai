@@ -61,7 +61,7 @@ class GemstoneID:
 
     def __lt__(self, other):
         if not isinstance(other, GemstoneID):
-            return NotImplemented
+            raise TypeError(f"Cannot compare GemstoneID to {type(other)}")
         return (self.priority, self.timestamp, self.machine_id, self.sequence_number) < (
             other.priority,
             other.timestamp,
@@ -71,7 +71,7 @@ class GemstoneID:
 
     def __eq__(self, other):
         if not isinstance(other, GemstoneID):
-            return NotImplemented
+            raise TypeError(f"Cannot compare GemstoneID to {type(other)}")
         return (self.priority, self.timestamp, self.machine_id, self.sequence_number) == (
             other.priority,
             other.timestamp,
@@ -98,12 +98,12 @@ class GemstoneGenerator:
         """
 
         timestamp = time.time_ns() // 1000000
-        if timestamp < self.last_timestamp:
+        if timestamp < self.last_timestamp:  # TBD: Write test case
             raise ClockMovedBackwardsError("Clock moved backwards!")
 
         if timestamp == self.last_timestamp:
             self.sequence_number = (self.sequence_number + 1) & SEQUENCE_BITMASK
-            if self.sequence_number == 0:
+            if self.sequence_number == 0:  # TBD: Write test case
                 # We have already generated 4096 IDs in this millisecond, wait until the next one
                 while timestamp <= self.last_timestamp:
                     timestamp = time.time_ns() // 1000000

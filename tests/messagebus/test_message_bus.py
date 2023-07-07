@@ -41,6 +41,26 @@ class TestMessageBus(unittest.TestCase):
         # The message should still be in the inbox of client_3
         self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_3']), 1)
 
+    # Test remove received message with multiple recipients
+    def test_remove_received_message_multiple_recipients(self):
+        message = self.client_1.send_message({"data": "Hello"}, ['client_2', 'client_3'])
+
+        self.message_bus.remove_received_message('client_1', ['client_2', 'client_3'], message.id)
+
+        # The message should have been removed from the inbox of client_2 and client_3
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_2']), 0)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_3']), 0)
+
+    # Test remove received message with wildcard recipient
+    def test_remove_received_message_wildcard_recipient(self):
+        message = self.client_1.send_message({"data": "Hello"}, ['client_2', 'client_3'])
+
+        self.message_bus.remove_received_message('client_1', ['*'], message.id)
+
+        # The message should have been removed from the inbox of client_2 and client_3
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_2']), 0)
+        self.assertEqual(len(self.message_bus.storage.inboxes[self.message_bus.id]['client_3']), 0)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,3 +1,4 @@
+import logging
 from typing import Callable, Optional
 
 from ..message import Message
@@ -19,7 +20,10 @@ class CallbackClient(Client):
         :param message_callback: The callback function to be triggered when a new message arrives
         """
         super().__init__(client_id, message_bus)
+        if not callable(message_callback):
+            raise TypeError('message_callback must be a callable function')
         self.message_callback: Callable[[Message], None] = message_callback
+        self.logger = logging.getLogger(__name__)
 
     def get_next_unread_message(self) -> Optional[Message]:
         """
@@ -46,9 +50,13 @@ class CallbackClient(Client):
         """
         Fetch the new message and handle it with the callback function.
         """
-        message = self.get_next_unread_message()
-        if message is not None:
-            self.handle_message(message)
+        try:
+            message = self.get_next_unread_message()
+            if message is not None:
+                self.handle_message(message)
+        except Exception as e:
+            self.logger.error('Error handling message: %s', e)
+            pass
 
     def process_all_unread_messages(self) -> None:
         """
