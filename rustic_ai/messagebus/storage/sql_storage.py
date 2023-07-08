@@ -1,10 +1,8 @@
 import json
-from contextlib import contextmanager
-from typing import Any, Generator, List, Optional
+from typing import Any, List, Optional
 
 from sqlalchemy import BigInteger, Column, Enum, Numeric, String, create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.decl_api import declarative_base
 from sqlalchemy.types import TypeDecorator
@@ -61,22 +59,7 @@ class SQLStorage(StorageBackend):
         """
         self.engine: Engine = create_engine(connection_string)
         Base.metadata.create_all(self.engine)
-        self.Session: sessionmaker = sessionmaker(bind=self.engine)
-
-    @contextmanager
-    def make_session(self) -> Generator[Any, Any, None]:
-        """
-        Context manager for session handling.
-        """
-        session = self.Session()
-        try:
-            yield session
-            session.commit()
-        except SQLAlchemyError as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+        self.Session = sessionmaker(bind=self.engine)
 
     def create_inbox(self, message_bus_id: str, client_id: str) -> None:
         # No action required as inboxes are not explicitly created in this storage
@@ -89,7 +72,7 @@ class SQLStorage(StorageBackend):
         :param message_bus_id: The ID of the message bus.
         :param client_id: The ID of the client.
         """
-        with self.make_session() as session:
+        with self.Session.begin() as session:  # type: ignore  # mypy cries about sessionmaker doesn't have begin method
             session.query(MessageTable).filter_by(message_bus_id=message_bus_id, recipient_id=client_id).delete(
                 synchronize_session=False
             )
@@ -102,7 +85,7 @@ class SQLStorage(StorageBackend):
         :param recipient_id: The ID of the recipient client.
         :param message: The message to be added.
         """
-        with self.make_session() as session:
+        with self.Session.begin() as session:  # type: ignore  # mypy cries about sessionmaker doesn't have begin method
             new_message = MessageTable(
                 id=message.id,
                 message_bus_id=message_bus_id,
@@ -124,7 +107,7 @@ class SQLStorage(StorageBackend):
         :param last_read_message_id: The ID of the last read message.
         :return: The next unread message, if one exists.
         """
-        with self.make_session() as session:
+        with self.Session() as session:
             result = (
                 session.query(MessageTable)
                 .filter(
@@ -157,7 +140,7 @@ class SQLStorage(StorageBackend):
         :param recipient_ids: The List of IDs for the recipient client.
         :param message_id: The ID of the message to be removed.
         """
-        with self.make_session() as session:
+        with self.Session.begin() as session:  # type: ignore  # mypy cries about sessionmaker doesn't have begin method
             session.query(MessageTable).filter(
                 MessageTable.message_bus_id == message_bus_id,
                 MessageTable.recipient_id.in_(recipient_ids),
